@@ -54,7 +54,24 @@ sudo make install
     ~/Documents/files_for_mirnaome/confidence_file.xlsx
     ```
     
-3) Localization file
+3) mirgenedb file
+    
+    Genomic coordinates from mirgenedb (http://mirgenedb.org/download) for human.
+    `hsa.gff` file
+    
+4) Cancer exons
+    Text file with names of exons that should be included in 
+    the first steps of the analysis (first mutations extraction
+    from vcf files).
+    
+    Example:
+    ```bash
+    EGFR_chr7.20
+    EGFR_chr7.21
+    EGFR_chr7.22
+    ``` 
+     
+5) Localization file
 
     Localization file may be prepared with a script `prepare_localization_file.py`
     based on two files downloaded from miRBase `hairpin.fa`,
@@ -68,26 +85,39 @@ sudo make install
     ~/Documents/files_for_mirnaome/new_coordinates_all_02.bed ~/Documents/output/Data_LUAD
     ```
     
-4) mirgenedb file
-    
-    Genomic coordinates from mirgenedb (http://mirgenedb.org/download) for human.
-    `hsa.gff` file
-    
-5) Cancer exons
-    Text file with names of exons that should be included in 
-    the first steps of the analysis (first mutations extraction
-    from vcf files).
-    
-    Example:
-    ```bash
-    EGFR_chr7.20
-    EGFR_chr7.21
-    EGFR_chr7.22
-    ``` 
-    
 ### Output data description
 
-1) 
+1) temp folder
+
+    Contains merged vcf files if there were multiple samples per patient
+    
+2) temp_reference folder
+    
+    Temporary files created in localization file script
+    
+3) files_summary_count_per_patient.csv
+
+    File with information how many files there are per patient per algorithm. If the merging
+    files was successful, we should have only 1s.
+    
+4) files_summary.csv
+
+    Used files summary, user_id, file localization, sample id name and aliQ
+    and algorithm used.
+    
+5) files_count_per_type.csv
+
+    Count of files per algorithm used.
+    
+6) not_unique_patients.csv
+
+    Patients for which we had multiple files (multiple samples).
+    
+7) do_not_use.txt
+
+    Files that were replaced with merged files (stored i temp folder)
+    that will not be used in next steps.
+    
 
 ### How to use it
 

@@ -21,13 +21,13 @@ def find_in_mirna(row, df_loc):
     if df_loc[
               (df_loc['chrom'] == row['chrom']) &
               (df_loc['start'] <= row['pos']) &
-              (df_loc['orientation'] <= row['orient_loc']) &
+              (df_loc['orientation'] == row['orient_loc']) &
               (df_loc['stop'] >= row['pos'])].shape[0] != 0:
 
         temp = df_loc[
                          (df_loc['chrom'] == row['chrom']) &
                          (df_loc['start'] <= row['pos']) &
-                         (df_loc['orientation'] <= row['orient_loc']) &
+                         (df_loc['orientation'] == row['orient_loc']) &
                          (df_loc['stop'] >= row['pos'])].values[0]
         if row['orient_loc'] == '+':
             start = row['pos'] - temp[2] + 1
@@ -70,30 +70,29 @@ def from_end(row, column_stop, column_start):
 
 
 def find_localization(row, df_loc):
+    # fix values that were not in reference
     if row['name'].lower() == 'hsa-mir-4477b' and \
         row['start'] == 63819560 and \
             row['stop'] == 63819669:
         row['Strand'] = '+'
-        # print(row['Strand'])
-        # print(type(row['Strand']))
     elif row['name'].lower() == 'hsa-mir-6723':
         row['Strand'] = '-'
     elif row['name'].lower() == 'hsa-mir-3656':
         row['Strand'] = '+'
     if (type(row['Strand']) != str and
         df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
-                  (df_loc['chrom'] == row['chrom']) &
-                  (df_loc['start'] <= row['pos']) &
-                  (df_loc['stop'] >= row['pos'])].shape[0] != 0):
+               (df_loc['chrom'] == row['chrom']) &
+               (df_loc['start'] <= row['pos']) &
+               (df_loc['stop'] >= row['pos'])].shape[0] != 0):
             localiz = df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
                              (df_loc['chrom'] == row['chrom']) &
                              (df_loc['start'] <= row['pos']) &
                              (df_loc['stop'] >= row['pos'])].values[0]
     elif df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
-              (df_loc['chrom'] == row['chrom']) &
-              (df_loc['start'] <= row['pos']) &
-              (df_loc['stop'] >= row['pos']) &
-              (df_loc['orientation'] == row['Strand'])].shape[0] != 0:
+                (df_loc['chrom'] == row['chrom']) &
+                (df_loc['start'] <= row['pos']) &
+                (df_loc['stop'] >= row['pos']) &
+                (df_loc['orientation'] == row['Strand'])].shape[0] != 0:
         localiz = df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
                          (df_loc['chrom'] == row['chrom']) &
                          (df_loc['start'] <= row['pos']) &
@@ -157,7 +156,6 @@ def type_of_mutation(row):
 
 
 def take_from_coord(coordinates, column_name, row):
-    # print(row)
     return coordinates[(coordinates['chr'] == row['chrom']) &
                        (coordinates['start'] < int(row['pos'])) &
                        (coordinates['stop'] > int(row['pos']))][column_name].values[0]
@@ -169,7 +167,7 @@ def seq_type(value, list_df):
     elif value in list_df:
         return 'cancer_exome'
     else:
-        return 'biogenesis_exome'
+        return 'not_defined'
 
 
 def subst_type(row):

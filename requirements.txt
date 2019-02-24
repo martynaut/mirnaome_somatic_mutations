@@ -3,3 +3,6 @@ click
 openpyxl
 numpy
 biopython
+xlrd
+lxml
+requests
