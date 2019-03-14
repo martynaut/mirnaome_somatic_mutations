@@ -115,8 +115,50 @@ sudo make install
     
 7) do_not_use.txt
 
-    Files that were replaced with merged files (stored i temp folder)
+    Files that were replaced with merged files (stored in temp folder)
     that will not be used in next steps.
+    
+8) results_muse.csv, results_mutect2.csv, results_somaticsniper.csv, varscan2.csv
+
+    Mutations found in files obtained in each of four algorithms.
+
+9) results_muse_eval.csv, results_mutect2_eval.csv, results_somaticsniper_eval.csv,
+varscan2_eval.csv
+    
+    Mutations found in files obtained in each of four algorithms after additional evaluation
+    based on read counts, SSC, BQ and QSS.
+
+10) all_mutations_filtered.csv
+
+    Mutations found by each of four algorithms concatenated.
+
+11) all_mutations_filtered_mut_type_gene.csv
+
+    File with mutations grouped so we won't have single mutation found by different
+    algorithms as multiple mutations.
+
+12) all_mutations_filtered_merge_programs.csv
+
+    All mutations with gene information and mutation type.
+
+13) complex.csv
+
+    Complex mutations (Column `complex` is `1`) are multiple mutations in single miRNA
+    in single patient.
+
+14) miRNA_per_chromosome.csv
+
+    How many miRNAs were mutated on single chromosome and how many mutations were found
+    in total.
+
+15) occur.csv
+
+    How many total mutations, unique mutations and patients with mutation found per
+    gene.
+
+16) distinct.csv
+
+    How many patients had unique mutations.
     
 
 ### How to use it
