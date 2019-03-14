@@ -18,4 +18,4 @@ def check_covered_mirnas(output_folder, covered_mirna_file):
     joined_df = df.join(df_results.set_index('gene'), how='outer', on='TargetID',
                         rsuffix='_results')
     outside_1600 = joined_df[joined_df['Interval'].isnull()]
-    outside_1600.to_csv(output_folder + '/mirnas_ouside_1600.csv', sep=',', index=False)
+    outside_1600.to_csv(output_folder + '/mirnas_outside_1600.csv', sep=',', index=False)
