@@ -17,13 +17,13 @@ def chrom_localisation(folder_output, chromosome_file):
     mir_mutations = mir_mutations.join(mir_coverage.set_index('TargetID'), on='gene', how='left', rsuffix='_cover')
     mir_mutations = mir_mutations[mir_mutations['HighCoverage'] == 1]
     mir_mutations_mirna = mir_mutations.groupby('chrom_cover').agg({'gene': 'nunique'})
-    mir_mutations_mirna.to_csv(folder_output + '/mirnas_perchrom.csv',
+    mir_mutations_mirna.to_csv(folder_output + '/mirnas_per_chrom.csv',
                                sep=','
                                )
     mir_mutations_pat = mir_mutations.groupby(['chrom_cover', 'indiv_name']).agg({'start': 'sum'})
     mir_mutations_pat.columns = ['count']
     mir_mutations_pat['count'] = 1
     mir_mutations_pat = mir_mutations_pat.groupby(['chrom_cover']).agg({'count': 'sum'})
-    mir_mutations_pat.to_csv(folder_output + '/patients_perchrom.csv',
+    mir_mutations_pat.to_csv(folder_output + '/patients_per_chrom.csv',
                              sep=','
                              )

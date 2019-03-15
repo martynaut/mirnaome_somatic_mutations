@@ -107,7 +107,11 @@ sudo make install
     
 6) (optional) Chromosome file
 
+    Tab-separated file with regions covered by NGS probes with columns 
+    `TargetID, Interval, Regions, Size, Databases, Coverage, HighCoverage, LowCoverage`
     
+    Example row: 
+    `HSA-LET-7A-1, chr9:96938239-96938318, 1, 80, CustomRegion, 100.0, 1, 0`
     
 ### Output data description
 
@@ -187,7 +191,23 @@ varscan2_eval.csv**
 
     Unique mutations description with localization within miRNA precursor.
     
+18) (optional) **mirnas_outside_probes.csv**
 
+    Mutations in what miRNAs were detected in vcf files outside probes-defined regions.
+    
+19) (optional) **high_confidence_mirnas_per_chrom.csv** 
+
+    miRNAs count per chromosome.
+    
+20) (optional) **mirnas_per_chrom.csv** 
+
+    miRNAs mutated (found in vscf) count per chromosome.
+
+21) (optional) **patients_per_chrom.csv** 
+
+    Patients that had mutations in each chromosome.
+    
+    
 ### How to use it
 
 Example run is prepared in `run_mirnaome.sh` bash script.
