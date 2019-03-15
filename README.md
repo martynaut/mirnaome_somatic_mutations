@@ -1,4 +1,4 @@
-# miRNAome somatic mutations
+# miRNome somatic mutations
 
 Project containing Python scripts used to analyse somatic mutations in cancer (LUAD and LUSC) patients 
 using somatic mutation data from TCGA
@@ -130,7 +130,7 @@ sudo make install
     
 4) **files_summary.csv**
 
-    Files summary including user_id, file localization, sample id name and aliQ
+    Files summary including user_id, file localization, sample id name and aliQ,
     and algorithm used.
     
 5) **files_count_per_type.csv**
@@ -253,7 +253,7 @@ To include chromosome analysis use `-c` argument adding chromosome file path.
 
 ## Authors
 
-Paulina Galka-Marciniak, Martyna O. Urbanek-Trzeciak, Piotr Kozlowski
+Martyna O. Urbanek-Trzeciak, Paulina Galka-Marciniak, Piotr Kozlowski
 
 Institute of Bioorganic Chemistry, Polish Academy of Sciences, Noskowskiego 12/14, 61-704, 
 Poznan, Poland
@@ -270,7 +270,7 @@ and Piotr Kozlowski<sup>1</sup>
 
 <sup>1</sup> Institute of Bioorganic Chemistry, Polish Academy of Sciences,  Poznan, Poland
 
-<sup>2</sup> Institute of Human Genetics, Polish Academy of Sciences, Poznan, Poland maciej.giefing@igcz.poznan.pl
+<sup>2</sup> Institute of Human Genetics, Polish Academy of Sciences, Poznan, Poland
 
 <sup>3</sup> The F. Lukaszczyk Oncology Center, Department of Molecular Oncology and Genetics, Bydgoszcz, Poland
 
