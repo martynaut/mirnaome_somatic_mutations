@@ -283,3 +283,7 @@ http://biorxiv.org/cgi/content/short/579011v1
 ## Contact
 
 For any issues, please create a GitHub Issue.
+
+## Funding
+
+This work was supported by research grants from the Polish National Science Centre [2016/22/A/NZ2/00184 (to P.K.) and 2015/17/N/NZ3/03629 (to M.O. U.-T.)] and the Polish Ministry of Science and Higher Education (support for young investigators to P.G.-M.)
