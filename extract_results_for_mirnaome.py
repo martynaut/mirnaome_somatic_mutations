@@ -15,9 +15,13 @@ def each_file_processing(filename, reference, dict_with_files):
 
     dataframe_records = pd.DataFrame()
 
-    with gzip.open(filename) as f:
+    try:
+        f = gzip.open(filename)
         for line in f.readlines():
-            line = line.decode('ascii')
+            try:
+                line = line.decode('ascii')
+            except AttributeError:
+                continue
             if line[:1] == '#':
                 pass
             else:
@@ -39,18 +43,66 @@ def each_file_processing(filename, reference, dict_with_files):
                     new_record['sample_id_normal_name'] = dict_with_files[filename]['sample_id_normal_name']
                     new_record['sample_id_normal_aliQ'] = dict_with_files[filename]['sample_id_normal_aliQ']
                     (new_record['norm_ref_count'], new_record['norm_alt_count'],
-                        new_record['tumor_ref_count'], new_record['tumor_alt_count'],
-                        new_record['BQ_ref_tum'],
-                        new_record['BQ_alt_tum'],
-                        new_record['BQ_ref_norm'],
-                        new_record['BQ_alt_norm'],
-                        new_record['QSS_ref_tum'],
-                        new_record['QSS_alt_tum'],
-                        new_record['QSS_ref_nor'],
-                        new_record['QSS_alt_nor'],
-                        new_record['SSC']) = retract_counts(
-                            new_record['NORMAL'], new_record['TUMOR'], new_record['FORMAT'],
-                            new_record['REF'], new_record['ALT'])
+                     new_record['tumor_ref_count'], new_record['tumor_alt_count'],
+                     new_record['BQ_ref_tum'],
+                     new_record['BQ_alt_tum'],
+                     new_record['BQ_ref_norm'],
+                     new_record['BQ_alt_norm'],
+                     new_record['QSS_ref_tum'],
+                     new_record['QSS_alt_tum'],
+                     new_record['QSS_ref_nor'],
+                     new_record['QSS_alt_nor'],
+                     new_record['SSC']) = retract_counts(
+                        new_record['NORMAL'], new_record['TUMOR'], new_record['FORMAT'],
+                        new_record['REF'], new_record['ALT'])
+
+                    if np.isnan(float(new_record['SSC'].values[0])):
+                        new_record['SSC'], new_record['SPV'] = retract_info(
+                            new_record['INFO']
+                        )
+                    else:
+                        new_record['SPV'] = np.nan
+                    dataframe_records = pd.concat([dataframe_records, new_record])
+    except OSError:
+        f = open(filename)
+        for line in f.readlines():
+            try:
+                line = line.decode('ascii')
+            except AttributeError:
+                continue
+            if line[:1] == '#':
+                pass
+            else:
+                position = line.split('\t')[:5]
+                if reference[(reference['chr'] == position[0]) &
+                             (reference['start_ref'] < int(position[1])) &
+                             (reference['stop_ref'] > int(position[1]))].shape[0] > 0:
+
+                    new_record = pd.DataFrame([line.replace('\n',
+                                                            '').replace(';',
+                                                                        ':').replace('"',
+                                                                                     '').split('\t')],
+                                              columns=['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER',
+                                                       'INFO', 'FORMAT', 'NORMAL', 'TUMOR'])
+                    new_record['indiv_name'] = dict_with_files[filename]['indiv_name']
+                    new_record['indiv_id'] = dict_with_files[filename]['indiv_id']
+                    new_record['sample_id_tumor_name'] = dict_with_files[filename]['sample_id_tumor_name']
+                    new_record['sample_id_tumor_aliQ'] = dict_with_files[filename]['sample_id_tumor_aliQ']
+                    new_record['sample_id_normal_name'] = dict_with_files[filename]['sample_id_normal_name']
+                    new_record['sample_id_normal_aliQ'] = dict_with_files[filename]['sample_id_normal_aliQ']
+                    (new_record['norm_ref_count'], new_record['norm_alt_count'],
+                     new_record['tumor_ref_count'], new_record['tumor_alt_count'],
+                     new_record['BQ_ref_tum'],
+                     new_record['BQ_alt_tum'],
+                     new_record['BQ_ref_norm'],
+                     new_record['BQ_alt_norm'],
+                     new_record['QSS_ref_tum'],
+                     new_record['QSS_alt_tum'],
+                     new_record['QSS_ref_nor'],
+                     new_record['QSS_alt_nor'],
+                     new_record['SSC']) = retract_counts(
+                        new_record['NORMAL'], new_record['TUMOR'], new_record['FORMAT'],
+                        new_record['REF'], new_record['ALT'])
 
                     if np.isnan(float(new_record['SSC'].values[0])):
                         new_record['SSC'], new_record['SPV'] = retract_info(
@@ -60,6 +112,8 @@ def each_file_processing(filename, reference, dict_with_files):
                         new_record['SPV'] = np.nan
                     dataframe_records = pd.concat([dataframe_records, new_record])
 
+
+        f.close()
     return dataframe_records
 
 
@@ -89,7 +143,7 @@ def all_files_processing(input_folder, output_folder, coordinates_file):
             do_not_use.append(line[:-1])
         gz_files = []
         for file in files:
-            if file[-6:] == 'vcf.gz' and file not in do_not_use:
+            if (file.endswith('vcf.gz') or file.endswith('vcf')) and file not in do_not_use:
                 gz_files.append(file)
             else:
                 pass
