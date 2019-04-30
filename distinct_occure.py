@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from distinct_occure_helpers import concat_ints, type_of_mutation, take_from_coord, concat_alg, seq_type, if_complex, \
     subst_type, find_localization, from_end, from_start, find_in_mirna, find_arm, set_balance
 import warnings
@@ -165,7 +166,26 @@ def dist_occur(output_folder, coordinates, confidence_file, mirgenedb_file, canc
     distinct['name'] = distinct['gene'].str.lower().str.extract(r'([hsa]*\-[mirlet]*\-[0-9a-z]*)', expand=False)
     all_mutations['name'] = all_mutations['gene'].str.lower().str.extract(r'([hsa]*\-[mirlet]*\-[0-9a-z]*)',
                                                                           expand=False)
-    newcols = distinct.apply(lambda x: pd.Series(find_localization(x, localizations)), axis=1)
+
+    if distinct.shape[0] > 0:
+        newcols = distinct.apply(lambda x: pd.Series(find_localization(x, localizations)), axis=1)
+    else:
+        newcols = pd.DataFrame([[np.nan,
+                                 np.nan,
+                                 np.nan,
+                                 np.nan,
+                                 np.nan,
+                                 np.nan,
+                                 np.nan,
+                                 np.nan]], columns=['chrom_loc',
+                                                    'name_loc',
+                                                    'start_loc',
+                                                    'stop_loc',
+                                                    'orient_loc',
+                                                    'based_on_coordinates',
+                                                    'arm',
+                                                    'type'])
+
     newcols.columns = ['chrom_loc',
                        'name_loc',
                        'start_loc',
@@ -178,32 +198,71 @@ def dist_occur(output_folder, coordinates, confidence_file, mirgenedb_file, canc
 
     del newcols
 
-    distinct['from_start'] = distinct.apply(lambda x: from_start(x, 'start_loc', 'stop_loc'), axis=1)
-    distinct['from end'] = distinct.apply(lambda x: from_end(x, 'stop_loc', 'start_loc'), axis=1)
+    try:
 
-    new_cols2 = distinct.apply(lambda x: pd.Series(find_in_mirna(x, mirnas)), axis=1)
-    new_cols2.columns = ['start_mirna', 'stop_mirna']
+        distinct['from_start'] = distinct.apply(lambda x: from_start(x, 'start_loc', 'stop_loc'), axis=1)
+        distinct['from end'] = distinct.apply(lambda x: from_end(x, 'stop_loc', 'start_loc'), axis=1)
+
+        new_cols2 = distinct.apply(lambda x: pd.Series(find_in_mirna(x, mirnas)), axis=1)
+        new_cols2.columns = ['start_mirna', 'stop_mirna']
+    except ValueError:
+        new_cols2 = pd.DataFrame([[np.nan,
+                                   np.nan,
+                                   np.nan,
+                                   np.nan]], columns=['from_start',
+                                                      'from_end',
+                                                      'start_mirna',
+                                                      'srop_mirna'])
 
     distinct = distinct.join(new_cols2)
 
-    newcols_all = all_mutations.apply(lambda x: pd.Series(find_localization(x, localizations)), axis=1)
-    newcols_all.columns = ['chrom_loc',
-                           'name_loc',
-                           'start_loc',
-                           'stop_loc',
-                           'orient_loc',
-                           'based_on_coordinates',
-                           'arm',
-                           'type']
+    try:
+
+        newcols_all = all_mutations.apply(lambda x: pd.Series(find_localization(x, localizations)), axis=1)
+        newcols_all.columns = ['chrom_loc',
+                               'name_loc',
+                               'start_loc',
+                               'stop_loc',
+                               'orient_loc',
+                               'based_on_coordinates',
+                               'arm',
+                               'type']
+    except ValueError:
+        newcols_all = pd.DataFrame([[np.nan,
+                                     np.nan,
+                                     np.nan,
+                                     np.nan,
+                                     np.nan,
+                                     np.nan,
+                                     np.nan,
+                                     np.nan]], columns=['chrom_loc',
+                                                        'name_loc',
+                                                        'start_loc',
+                                                        'stop_loc',
+                                                        'orient_loc',
+                                                        'based_on_coordinates',
+                                                        'arm',
+                                                        'type'])
 
     all_mutations = all_mutations.join(newcols_all)
 
     del newcols_all
 
-    all_mutations['from_start'] = all_mutations.apply(lambda x: from_start(x, 'start_loc', 'stop_loc'), axis=1)
-    all_mutations['from end'] = all_mutations.apply(lambda x: from_end(x, 'stop_loc', 'start_loc'), axis=1)
-    new_cols2 = all_mutations.apply(lambda x: pd.Series(find_in_mirna(x, mirnas)), axis=1)
-    new_cols2.columns = ['start_mirna', 'stop_mirna']
+    try:
+
+        all_mutations['from_start'] = all_mutations.apply(lambda x: from_start(x, 'start_loc', 'stop_loc'), axis=1)
+        all_mutations['from end'] = all_mutations.apply(lambda x: from_end(x, 'stop_loc', 'start_loc'), axis=1)
+        new_cols2 = all_mutations.apply(lambda x: pd.Series(find_in_mirna(x, mirnas)), axis=1)
+        new_cols2.columns = ['start_mirna', 'stop_mirna']
+
+    except ValueError:
+        new_cols2 = pd.DataFrame([[np.nan,
+                                   np.nan,
+                                   np.nan,
+                                   np.nan]], columns=['from_start',
+                                                      'from_end',
+                                                      'start_mirna',
+                                                      'srop_mirna'])
 
     del mirnas
 
