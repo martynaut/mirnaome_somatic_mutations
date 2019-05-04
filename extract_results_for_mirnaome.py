@@ -18,8 +18,10 @@ def each_file_processing(filename, reference, dict_with_files):
     with gzip.open(filename) as f:
         for line in f.readlines():
             line = line.decode('ascii')
-            if line[:1] == '#':
+            if line[:1] == '##':
                 pass
+            elif line[:1] == '#':
+                columns = line.replace('#', '').strip().split('\t')
             else:
                 position = line.split('\t')[:5]
                 if reference[(reference['chr'] == position[0]) &
@@ -30,8 +32,7 @@ def each_file_processing(filename, reference, dict_with_files):
                                                             '').replace(';',
                                                                         ':').replace('"',
                                                                                      '').split('\t')],
-                                              columns=['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER',
-                                                       'INFO', 'FORMAT', 'NORMAL', 'TUMOR'])
+                                              columns=columns)
                     new_record['indiv_name'] = dict_with_files[filename]['indiv_name']
                     new_record['indiv_id'] = dict_with_files[filename]['indiv_id']
                     new_record['sample_id_tumor_name'] = dict_with_files[filename]['sample_id_tumor_name']
