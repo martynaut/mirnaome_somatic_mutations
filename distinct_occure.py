@@ -13,6 +13,7 @@ def dist_occur(output_folder, coordinates, confidence_file, mirgenedb_file, canc
                localization_file, mirna_reads_file):
 
     confidence = pd.read_excel(confidence_file)
+    confidence['id'].fillna('undefined', inplace=True)
     mirgenedb = pd.read_csv(mirgenedb_file, sep='\t', skiprows=3,
                             names=['chr', '.', 'type', 'start', 'stop',
                                    '.1', 'orientation', '.2', 'ID'])
@@ -27,6 +28,7 @@ def dist_occur(output_folder, coordinates, confidence_file, mirgenedb_file, canc
     confidence.drop(['score', 'id',
                      'start', 'stop'], inplace=True, axis=1)
     confidence.set_index('name', inplace=True)
+    confidence.to_excel('/Users/martynaurbanek/Documents/confidence_test.xlsx')
     coordinates = pd.read_table(coordinates,
                                 names=['chr', 'start', 'stop', 'gene'])
     coordinates['start_ref'] = coordinates['start']
