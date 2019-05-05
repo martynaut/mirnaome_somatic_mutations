@@ -16,6 +16,7 @@ def each_file_processing(filename, reference, dict_with_files):
     dataframe_records = pd.DataFrame()
 
     with gzip.open(filename) as f:
+        columns = []
         for line in f.readlines():
             line = line.decode('ascii')
             if line[:1] == '##':

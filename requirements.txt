@@ -6,3 +6,4 @@ biopython
 xlrd
 lxml
 requests
+scipy

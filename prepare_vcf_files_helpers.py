@@ -10,7 +10,7 @@ def change_info(col, file_type):
             new_col2 = col.str.extract(r':SPV=([0-9/.Ee/-]{0,})', expand=True)
             ssc_max = new_col.astype('float').max().values[0]
             spv_min = new_col2.astype('float').min().values[0]
-            result = re.sub(r':SSC=([0-9.]*)', ':SSC='+str(ssc_max), list(col.values)[0])
+            result = re.sub(r':SSC=([0-9.]*)', ':SSC='+str(ssc_max), result)
             result = re.sub(r':SPV=([0-9.Ee\-]*)', ':SPV='+str(spv_min), result)
         else:
             result = list(col.values)[0]
@@ -21,121 +21,63 @@ def change_info(col, file_type):
     return result
 
 
-def change_format(col, file_type):
+def change_format(col, file_type, column_name):
     first = list(col)[0].split(':')
     try:
         if file_type == 'muse':
-
-            if len(list(col)[0].split(':')[1].split(',')) > 2:
-
-                t_ad_value_1 = col.apply(lambda x: x.split(':')[1].split(',')[0])
-                t_ad_value_2 = col.apply(lambda x: x.split(':')[1].split(',')[1])
-                t_ad_value_3 = col.apply(lambda x: x.split(':')[1].split(',')[2])
-
-                t_bq_1 = col.apply(lambda x: x.split(':')[2].split(',')[0])
-                t_bq_2 = col.apply(lambda x: x.split(':')[2].split(',')[1])
-                t_bq_3 = col.apply(lambda x: x.split(':')[2].split(',')[2])
-
-                ad_value_1 = t_ad_value_1.astype('int').sum()
-                ad_value_2 = t_ad_value_2.astype('int').sum()
-                ad_value_3 = t_ad_value_3.astype('int').sum()
-
-                bq_1 = t_bq_1.astype('float').max()
-                bq_2 = t_bq_2.astype('float').max()
-                bq_3 = t_bq_3.astype('float').max()
-
-                first[1] = str(ad_value_1) + ',' + str(ad_value_2) + ',' + str(ad_value_3)
-                first[2] = str(bq_1) + ',' + str(bq_2) + ',' + str(bq_3)
-
-            else:
-
-                t_ad_value_1 = col.apply(lambda x: x.split(':')[1].split(',')[0])
-                t_ad_value_2 = col.apply(lambda x: x.split(':')[1].split(',')[1])
-
-                t_bq_1 = col.apply(lambda x: x.split(':')[2].split(',')[0])
-                t_bq_2 = col.apply(lambda x: x.split(':')[2].split(',')[1])
-
-                ad_value_1 = t_ad_value_1.astype('int').sum()
-                ad_value_2 = t_ad_value_2.astype('int').sum()
-
-                bq_1 = t_bq_1.astype('float').max()
-                bq_2 = t_bq_2.astype('float').max()
-
-                first[1] = str(ad_value_1) + ',' + str(ad_value_2)
-                first[2] = str(bq_1) + ',' + str(bq_2)
+            if column_name in ['AD_normal', 'AD_tumor']:
+                ad_values = col.str.split(',', expand=True)
+                ad_values = ad_values.astype(float).sum(axis=0)
+                ad_values = ','.join(map(lambda x: str(int(x)), ad_values.values))
+                return ad_values
+            elif column_name in ['BQ_normal', 'BQ_tumor']:
+                bq_values = col.str.split(',', expand=True)
+                bq_values = bq_values.astype(float).max(axis=0)
+                bq_values = ','.join(map(lambda x: str(int(x)), bq_values.values))
+                return bq_values
 
         elif file_type == 'mutect2':
 
-            if len(list(col)[0].split(':')[1].split(',')) > 2:
-
-                t_ad_value_1 = col.apply(lambda x: x.split(':')[1].split(',')[0])
-                t_ad_value_2 = col.apply(lambda x: x.split(':')[1].split(',')[1])
-                t_ad_value_3 = col.apply(lambda x: x.split(':')[1].split(',')[2])
-
-                t_qss_1 = col.apply(lambda x: x.split(':')[-3].split(',')[0])
-                t_qss_2 = col.apply(lambda x: x.split(':')[-3].split(',')[1])
-
-                ad_value_1 = t_ad_value_1.astype('int').sum()
-                ad_value_2 = t_ad_value_2.astype('int').sum()
-                ad_value_3 = t_ad_value_3.astype('int').sum()
-
-                qss_1 = t_qss_1.astype('int').sum()
-                qss_2 = t_qss_2.astype('int').sum()
-
-                first[1] = str(ad_value_1) + ',' + str(ad_value_2) + ',' + str(ad_value_3)
-                first[-3] = str(qss_1) + ',' + str(qss_2)
-
-            else:
-
-                if list(col)[0].split(':')[1] == '.':
-                    pass
-
+            if column_name in ['AD_normal', 'AD_tumor']:
+                ad_values = col.str.split(',', expand=True)
+                if ad_values.values is [['.']]:
+                    return '.'
                 else:
-                    t_ad_value_1 = col.apply(lambda x: x.split(':')[1].split(',')[0])
-                    t_ad_value_2 = col.apply(lambda x: x.split(':')[1].split(',')[1])
-
-                    ad_value_1 = t_ad_value_1.astype('int').sum()
-                    ad_value_2 = t_ad_value_2.astype('int').sum()
-
-                    first[1] = str(ad_value_1) + ',' + str(ad_value_2)
-
-                t_qss_1 = col.apply(lambda x: x.split(':')[-3].split(',')[0])
-                t_qss_2 = col.apply(lambda x: x.split(':')[-3].split(',')[1])
-
-                qss_1 = t_qss_1.astype('int').sum()
-                qss_2 = t_qss_2.astype('int').sum()
-
-                first[-3] = str(qss_1) + ',' + str(qss_2)
+                    ad_values = ad_values.astype(float).sum(axis=0)
+                    ad_values = ','.join(map(lambda x: str(int(x)), ad_values.values))
+                    return ad_values
+            elif column_name in ['QSS_normal', 'QSS_tumor']:
+                qss_values = col.str.split(',', expand=True)
+                qss_values = qss_values.astype(float).sum(axis=0)
+                qss_values = ','.join(map(lambda x: str(int(x)), qss_values.values))
+                return qss_values
 
         elif file_type == 'somaticsniper':
 
-            t_ad_value_1 = col.apply(lambda x: x.split(':')[4].split(',')[0])
-            t_ad_value_2 = col.apply(lambda x: x.split(':')[4].split(',')[1])
-            t_ad_value_3 = col.apply(lambda x: x.split(':')[4].split(',')[2])
-            t_ad_value_4 = col.apply(lambda x: x.split(':')[4].split(',')[3])
-
-            t_ssc = col.apply(lambda x: x.split(':')[-1].replace('.', '0'))
-
-            ad_value_1 = t_ad_value_1.astype('int').sum()
-            ad_value_2 = t_ad_value_2.astype('int').sum()
-            ad_value_3 = t_ad_value_3.astype('int').sum()
-            ad_value_4 = t_ad_value_4.astype('int').sum()
-
-            ssc = t_ssc.astype('int').max()
-
-            first[4] = str(ad_value_1) + ',' + str(ad_value_2) + ',' + str(ad_value_3) + ',' + str(ad_value_4)
-            first[-1] = str(ssc)
+            if column_name in ['BCOUNT_normal', 'BCOUNT_tumor']:
+                bc_values = col.str.replace('.', '0').str.split(',', expand=True)
+                bc_values = bc_values.astype(float).sum(axis=0)
+                bc_values = ','.join(map(lambda x: str(int(x)), bc_values.values))
+                return bc_values
+            elif column_name in ['SSC_normal', 'SSC_tumor']:
+                ssc_values = col.str.replace('.', '0').str.split(',', expand=True)
+                ssc_values = ssc_values.astype(float).max(axis=0)
+                ssc_values = ','.join(map(lambda x: str(int(x)), ssc_values.values))
+                return ssc_values
 
         else:
 
-            t_rd = col.apply(lambda x: x.split(':')[3])
-            t_ad = col.apply(lambda x: x.split(':')[4])
+            if column_name in ['AD_normal', 'AD_tumor']:
+                ad_values = col.str.replace('.', '0').str.split(',', expand=True)
+                ad_values = ad_values.astype(float).sum(axis=0)
+                ad_values = ','.join(map(lambda x: str(int(x)), ad_values.values))
+                return ad_values
+            elif column_name in ['RD_normal', 'RD_tumor']:
+                rd_values = col.str.split(',', expand=True)
+                rd_values = rd_values.astype(float).sum(axis=0)
+                rd_values = ','.join(map(lambda x: str(int(x)), rd_values.values))
+                return rd_values
 
-            rd = t_rd.astype('int').sum()
-            ad = t_ad.astype('int').sum()
-
-            first[3] = str(rd)
-            first[4] = str(ad)
     except Exception as e:
         raise e
 
