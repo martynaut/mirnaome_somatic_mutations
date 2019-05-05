@@ -28,7 +28,6 @@ def dist_occur(output_folder, coordinates, confidence_file, mirgenedb_file, canc
     confidence.drop(['score', 'id',
                      'start', 'stop'], inplace=True, axis=1)
     confidence.set_index('name', inplace=True)
-    confidence.to_excel('/Users/martynaurbanek/Documents/confidence_test.xlsx')
     coordinates = pd.read_table(coordinates,
                                 names=['chr', 'start', 'stop', 'gene'])
     coordinates['start_ref'] = coordinates['start']
