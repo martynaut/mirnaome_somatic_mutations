@@ -9,7 +9,7 @@ from prepare_vcf_files_helpers import update_dict_with_file
 pd.options.mode.chained_assignment = None
 
 
-def each_file_processing(filename, reference, dict_with_files):
+def each_file_processing(filename, coordinates, dict_with_files):
 
     print(filename)
 
@@ -22,12 +22,12 @@ def each_file_processing(filename, reference, dict_with_files):
             if line[:1] == '##':
                 pass
             elif line[:1] == '#':
-                columns = line.replace('#', '').strip().split('\t')
+                columns = line.replace('#', '').strip().lower().split('\t')
             else:
                 position = line.split('\t')[:5]
-                if reference[(reference['chr'] == position[0]) &
-                             (reference['start_ref'] < int(position[1])) &
-                             (reference['stop_ref'] > int(position[1]))].shape[0] > 0:
+                if coordinates[(coordinates['chr'] == position[0]) &
+                             (coordinates['start_ref'] < int(position[1])) &
+                             (coordinates['stop_ref'] > int(position[1]))].shape[0] > 0:
 
                     new_record = pd.DataFrame([line.replace('\n',
                                                             '').replace(';',
@@ -51,12 +51,12 @@ def each_file_processing(filename, reference, dict_with_files):
                         new_record['QSS_ref_nor'],
                         new_record['QSS_alt_nor'],
                         new_record['SSC']) = retract_counts(
-                            new_record['NORMAL'], new_record['TUMOR'], new_record['FORMAT'],
-                            new_record['REF'], new_record['ALT'])
+                            new_record['normal'], new_record['tumor'], new_record['format'],
+                            new_record['ref'], new_record['alt'])
 
                     if np.isnan(float(new_record['SSC'].values[0])):
                         new_record['SSC'], new_record['SPV'] = retract_info(
-                            new_record['INFO']
+                            new_record['info']
                         )
                     else:
                         new_record['SPV'] = np.nan
@@ -78,10 +78,9 @@ def all_files_processing(input_folder, output_folder, coordinates_file):
 
     files = [[x[0] + '/' + y for y in x[2]] for x in os.walk(input_folder)]
     files = [file for sublist in files for file in sublist]
-    print(files)
+
     files_temp = [[x[0] + '/' + y for y in x[2]] for x in os.walk(output_folder + '/temp')]
     files_temp = [file for sublist in files_temp for file in sublist]
-    print(files_temp)
 
     files.extend(files_temp)
 
@@ -128,7 +127,7 @@ def all_files_processing(input_folder, output_folder, coordinates_file):
                                              dict_with_files
                                              )
             results_df = pd.concat([results_df, dataframe])
-        results_df = results_df[results_df['FILTER'].str.contains('PASS')]
+        results_df = results_df[results_df['filter'].str.contains('PASS')]
         results_df.to_csv(output_folder + '/results_{}.csv'.format(file_type),
                           sep=',',
                           index=False)
