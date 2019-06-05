@@ -56,41 +56,68 @@ def find_arm(row):
 
 
 def from_start(row, column_start, column_stop):
-    if row['orientation'] == '+':
+    if row['orient_loc'] == '+':
         return row['pos'] - row[column_start] + 1
     else:
         return row[column_stop] - row['pos'] + 1
 
 
 def from_end(row, column_stop, column_start):
-    if row['orientation'] == '+':
+    if row['orient_loc'] == '+':
         return row['pos'] - row[column_stop] - 1
     else:
         return row[column_start] - row['pos'] - 1
 
 
 def find_localization(row, df_loc):
-    print(row)
-    localizations = df_loc[(df_loc['chrom'] == row['chrom']) &
+    # fix values that were not in reference
+    if row['name'].lower() == 'hsa-mir-4477b' and \
+        row['start'] == 63819560 and \
+            row['stop'] == 63819669:
+        row['Strand'] = '+'
+    elif row['name'].lower() == 'hsa-mir-6723':
+        row['Strand'] = '-'
+    elif row['name'].lower() == 'hsa-mir-3656':
+        row['Strand'] = '+'
+    if (type(row['Strand']) != str and
+        df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
+               (df_loc['chrom'] == row['chrom']) &
+               (df_loc['start'] <= row['pos']) &
+               (df_loc['stop'] >= row['pos'])].shape[0] != 0):
+            localiz = df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
+                             (df_loc['chrom'] == row['chrom']) &
+                             (df_loc['start'] <= row['pos']) &
+                             (df_loc['stop'] >= row['pos'])].values[0]
+    elif df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
+                (df_loc['chrom'] == row['chrom']) &
+                (df_loc['start'] <= row['pos']) &
+                (df_loc['stop'] >= row['pos']) &
+                (df_loc['orientation'] == row['Strand'])].shape[0] != 0:
+        localiz = df_loc[(df_loc['name'].str.contains(row['name'].lower())) &
+                         (df_loc['chrom'] == row['chrom']) &
                          (df_loc['start'] <= row['pos']) &
-                         (df_loc['stop'] >= row['pos'])].values
-    print(localizations)
-    if len(localizations) > 1:
-        raise ValueError
+                         (df_loc['stop'] >= row['pos']) &
+                         (df_loc['orientation'] == row['Strand'])].values[0]
     else:
-        return localizations[0]
+        localiz = [np.nan,
+                   np.nan,
+                   np.nan,
+                   np.nan,
+                   np.nan,
+                   np.nan]
+    return localiz
 
 
 def if_complex(row, complex_df):
     if complex_df[(complex_df['chrom'] == row['chrom']) &
-                  (complex_df['pre_name'] == row['pre_name']) &
-                  (complex_df['id'] == row['id']) &
-                  (complex_df['start_pre'] == row['start_pre']) &
+                  (complex_df['start'] == row['start']) &
+                  (complex_df['stop'] == row['stop']) &
+                  (complex_df['gene'] == row['gene']) &
                   (complex_df['seq_type'] == row['seq_type'])].shape[0] != 0:
         values = complex_df[(complex_df['chrom'] == row['chrom']) &
-                            (complex_df['pre_name'] == row['pre_name']) &
-                            (complex_df['id'] == row['id']) &
-                            (complex_df['start_pre'] == row['start_pre']) &
+                            (complex_df['start'] == row['start']) &
+                            (complex_df['stop'] == row['stop']) &
+                            (complex_df['gene'] == row['gene']) &
                             (complex_df['seq_type'] == row['seq_type'])]['complex'].unique()
         if 1 in values:
             return 1
@@ -134,9 +161,11 @@ def take_from_coord(coordinates, column_name, row):
                        (coordinates['stop'] > int(row['pos']))][column_name].values[0]
 
 
-def seq_type(value):
+def seq_type(value, list_df):
     if 'hsa-' in value:
         return 'mirna'
+    elif value in list_df:
+        return 'cancer_exome'
     else:
         return 'not_defined'
 

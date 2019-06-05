@@ -39,7 +39,7 @@ def validation_function(row):
 
 
 def add_coordinates(row, coordinates):
-    result = coordinates[(coordinates['chr'] == row['chrom']) &
-                         (coordinates['start_ref'] < row['pos']) &
-                         (coordinates['stop_ref'] > row['pos'])]['gene'].values[0]
+    result = coordinates[(coordinates['chr'] == row['CHROM']) &
+                         (coordinates['start_ref'] < row['POS']) &
+                         (coordinates['stop_ref'] > row['POS'])]['gene'].values[0]
     return result

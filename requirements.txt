@@ -7,4 +7,3 @@ xlrd
 lxml
 requests
 scipy
-biopython
