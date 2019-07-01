@@ -8,7 +8,7 @@ warnings.filterwarnings('ignore')
 pd.options.mode.chained_assignment = None
 
 
-def dist_occur(output_folder, localization_file):
+def dist_occur(output_folder, localization_file, coordinates_file):
 
     all_mutations_raw = pd.read_csv(output_folder + '/all_mutations_filtered.csv')
     all_mutations_raw.columns = all_mutations_raw.columns.str.lower()
@@ -19,6 +19,9 @@ def dist_occur(output_folder, localization_file):
                             'sample_id_tumor_aliq', 'sample_id_normal_name',
                             'sample_id_normal_aliq'
                             ], axis=1, inplace=True)
+    if all_mutations_raw.shape[0] == 0:
+        print('no mutations found')
+        return 0
     all_mutations_raw['mutation_type'] = all_mutations_raw.apply(lambda x: type_of_mutation(x), axis=1)
 
     all_mutations_raw.fillna(-1, inplace=True)
@@ -36,6 +39,19 @@ def dist_occur(output_folder, localization_file):
     all_mutations.to_csv(output_folder + '/all_mutations_algorithms_merged.csv',
                          sep=',',
                          index=False)
+
+    all_mutations_not_mirna = all_mutations.copy()
+    coordinates = pd.read_csv(coordinates_file, names=['chrom', 'start', 'stop', 'name'],
+                              sep='\t')
+
+    coordinates_not_mirna = coordinates[~coordinates['name'].str.contains('hsa-')]
+
+    all_mutations_not_mirna = all_mutations_not_mirna.join(coordinates_not_mirna.set_index('chrom'), on='chrom', how='left')
+    all_mutations_not_mirna = all_mutations_not_mirna[(all_mutations_not_mirna['pos'] >= all_mutations_not_mirna['start'])
+                                  & (all_mutations_not_mirna['pos'] <= all_mutations_not_mirna['stop'])]
+    all_mutations_not_mirna.to_csv(output_folder + '/all_mutations_not_mirna.csv',
+                                   sep=',',
+                                   index=False)
 
     localizations = pd.read_csv(localization_file, sep=',')
     all_mutations = all_mutations.join(localizations.set_index('chrom'), on='chrom', how='left')
