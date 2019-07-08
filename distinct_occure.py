@@ -72,24 +72,8 @@ def dist_occur(output_folder, localization_file, coordinates_file):
          'tumor_ref_count': [sum, concat_ints],
          'tumor_alt_count': [sum, concat_ints],
          }).reset_index()
-    df_by_mutation_not_miRNA['chrom'] = df_by_mutation_not_miRNA[('chrom', '')]
-    df_by_mutation_not_miRNA['name'] = df_by_mutation_not_miRNA[('name', '')]
-    df_by_mutation_not_miRNA['start'] = df_by_mutation_not_miRNA[('start', '')]
-    df_by_mutation_not_miRNA['pos'] = df_by_mutation_not_miRNA[('pos', '')]
-    df_by_mutation_not_miRNA['ref'] = df_by_mutation_not_miRNA[('ref', '')]
-    df_by_mutation_not_miRNA['alt'] = df_by_mutation_not_miRNA[('alt', '')]
-    df_by_mutation_not_miRNA['mutation_type'] = df_by_mutation_not_miRNA[('mutation_type', '')]
-    df_by_mutation_not_miRNA['type_of_subst'] = df_by_mutation_not_miRNA[('type_of_subst', '')]
-    df_by_mutation_not_miRNA['indiv_name'] = df_by_mutation_not_miRNA[('indiv_name', 'nunique')]
-    df_by_mutation_not_miRNA['norm_ref_count_sum'] = df_by_mutation_not_miRNA[('norm_ref_count', 'sum')]
-    df_by_mutation_not_miRNA['norm_ref_count_concat'] = df_by_mutation_not_miRNA[('norm_ref_count', 'concat_ints')]
-    df_by_mutation_not_miRNA['norm_alt_count_sum'] = df_by_mutation_not_miRNA[('norm_alt_count', 'sum')]
-    df_by_mutation_not_miRNA['norm_alt_count_concat'] = df_by_mutation_not_miRNA[('norm_alt_count', 'concat_ints')]
-    df_by_mutation_not_miRNA['tumor_ref_count_sum'] = df_by_mutation_not_miRNA[('tumor_ref_count', 'sum')]
-    df_by_mutation_not_miRNA['tumor_ref_count_concat'] = df_by_mutation_not_miRNA[('tumor_ref_count', 'concat_ints')]
-    df_by_mutation_not_miRNA['tumor_alt_count_sum'] = df_by_mutation_not_miRNA[('tumor_alt_count', 'sum')]
-    df_by_mutation_not_miRNA['tumor_alt_count_concat'] = df_by_mutation_not_miRNA[('tumor_alt_count', 'concat_ints')]
-    df_by_mutation_not_miRNA.drop([x for x in df_by_mutation_not_miRNA.columns if type(x) != str], axis=1, inplace=True)
+
+    df_by_mutation_not_miRNA.columns = [' '.join(col).strip() for col in df_by_mutation_not_miRNA.columns.values]
 
     df_by_mutation_not_miRNA.to_csv(output_folder + '/by_distinct_mutation_not_miRNA.csv',
                           sep=',',
@@ -149,27 +133,8 @@ def dist_occur(output_folder, localization_file, coordinates_file):
          'tumor_alt_count': [sum, concat_ints],
          'no_of_loc': concat_ints
          }).reset_index()
-    df_by_mutation['chrom'] = df_by_mutation[('chrom', '')]
-    df_by_mutation['name'] = df_by_mutation[('pre_name', '')]
-    df_by_mutation['id'] = df_by_mutation[('id', '')]
-    df_by_mutation['start_pre'] = df_by_mutation[('start_pre', '')]
-    df_by_mutation['seq_type'] = df_by_mutation[('seq_type', '')]
-    df_by_mutation['pos'] = df_by_mutation[('pos', '')]
-    df_by_mutation['ref'] = df_by_mutation[('ref', '')]
-    df_by_mutation['alt'] = df_by_mutation[('alt', '')]
-    df_by_mutation['mutation_type'] = df_by_mutation[('mutation_type', '')]
-    df_by_mutation['type_of_subst'] = df_by_mutation[('type_of_subst', '')]
-    df_by_mutation['indiv_name'] = df_by_mutation[('indiv_name', 'nunique')]
-    df_by_mutation['norm_ref_count_sum'] = df_by_mutation[('norm_ref_count', 'sum')]
-    df_by_mutation['norm_ref_count_concat'] = df_by_mutation[('norm_ref_count', 'concat_ints')]
-    df_by_mutation['norm_alt_count_sum'] = df_by_mutation[('norm_alt_count', 'sum')]
-    df_by_mutation['norm_alt_count_concat'] = df_by_mutation[('norm_alt_count', 'concat_ints')]
-    df_by_mutation['tumor_ref_count_sum'] = df_by_mutation[('tumor_ref_count', 'sum')]
-    df_by_mutation['tumor_ref_count_concat'] = df_by_mutation[('tumor_ref_count', 'concat_ints')]
-    df_by_mutation['tumor_alt_count_sum'] = df_by_mutation[('tumor_alt_count', 'sum')]
-    df_by_mutation['tumor_alt_count_concat'] = df_by_mutation[('tumor_alt_count', 'concat_ints')]
-    df_by_mutation['no_of_loc'] = df_by_mutation[('no_of_loc', 'concat_ints')]
-    df_by_mutation.drop([x for x in df_by_mutation.columns if type(x) != str], axis=1, inplace=True)
+    
+    df_by_mutation.columns = [' '.join(col).strip() for col in df_by_mutation.columns.values]
 
     df_by_mutation.to_csv(output_folder + '/by_distinct_mutation.csv',
                           sep=',',
