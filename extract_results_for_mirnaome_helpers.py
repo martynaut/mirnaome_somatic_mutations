@@ -9,42 +9,60 @@ def retract_counts(normal, tumor, data_format, ref, alt):
 
     # somaticsnipper
     if 'BCOUNT' in data_format.values[0]:
-        bcount_pos = data_format.values[0].strip().split(':').index('BCOUNT')
-        seq_dict = {
-            'A': 0,
-            'C': 1,
-            'G': 2,
-            'T': 3
-        }
-        norm_bcount = normal.values[0].split(':')[bcount_pos].split(',')
-        tumor_bcount = tumor.values[0].split(':')[bcount_pos].split(',')
-        norm_ref = int(norm_bcount[seq_dict.get(ref, seq_dict.get(ref[0], 0))])
-        norm_alt = int(norm_bcount[seq_dict.get(alt, seq_dict.get(alt[0], 0))])
-        tumor_ref = int(tumor_bcount[seq_dict.get(ref, seq_dict.get(ref[0], 0))])
-        tumor_alt = int(tumor_bcount[seq_dict.get(alt, seq_dict.get(alt[0], 0))])
+        try:
+            bcount_pos = data_format.values[0].strip().split(':').index('BCOUNT')
+            seq_dict = {
+                'A': 0,
+                'C': 1,
+                'G': 2,
+                'T': 3
+            }
+            norm_bcount = normal.values[0].split(':')[bcount_pos].split(',')
+            tumor_bcount = tumor.values[0].split(':')[bcount_pos].split(',')
+            norm_ref = int(norm_bcount[seq_dict.get(ref, seq_dict.get(ref[0], 0))])
+            norm_alt = int(norm_bcount[seq_dict.get(alt, seq_dict.get(alt[0], 0))])
+            tumor_ref = int(tumor_bcount[seq_dict.get(ref, seq_dict.get(ref[0], 0))])
+            tumor_alt = int(tumor_bcount[seq_dict.get(alt, seq_dict.get(alt[0], 0))])
+        except:
+            norm_ref = 0
+            norm_alt = 0
+            tumor_ref = 0
+            tumor_alt = 0
 
     # varscan2
     elif 'RD' in data_format.values[0]:
-        rd_pos = data_format.values[0].strip().split(':').index('RD')
-        ad_pos = data_format.values[0].strip().split(':').index('AD')
-        norm_rd = normal.values[0].split(':')[rd_pos]
-        norm_ad = normal.values[0].split(':')[ad_pos]
-        norm_ref = int(norm_rd)
-        norm_alt = int(norm_ad)
-        tumor_rd = tumor.values[0].split(':')[rd_pos]
-        tumor_ad = tumor.values[0].split(':')[ad_pos]
-        tumor_ref = int(tumor_rd)
-        tumor_alt = int(tumor_ad)
+        try:
+            rd_pos = data_format.values[0].strip().split(':').index('RD')
+            ad_pos = data_format.values[0].strip().split(':').index('AD')
+            norm_rd = normal.values[0].split(':')[rd_pos]
+            norm_ad = normal.values[0].split(':')[ad_pos]
+            norm_ref = int(norm_rd)
+            norm_alt = int(norm_ad)
+            tumor_rd = tumor.values[0].split(':')[rd_pos]
+            tumor_ad = tumor.values[0].split(':')[ad_pos]
+            tumor_ref = int(tumor_rd)
+            tumor_alt = int(tumor_ad)
+        except:
+            norm_ref = 0
+            norm_alt = 0
+            tumor_ref = 0
+            tumor_alt = 0
 
     # muse & mutect2
     elif 'AD' in data_format.values[0]:
-        ad_pos = data_format.values[0].strip().split(':').index('AD')
-        norm_ad = normal.values[0].split(':')[ad_pos].split(',')
-        tumor_ad = tumor.values[0].split(':')[ad_pos].split(',')
-        norm_ref = int(norm_ad[0])
-        norm_alt = int(norm_ad[1])
-        tumor_ref = int(tumor_ad[0])
-        tumor_alt = int(tumor_ad[1])
+        try:
+            ad_pos = data_format.values[0].strip().split(':').index('AD')
+            norm_ad = normal.values[0].split(':')[ad_pos].split(',')
+            tumor_ad = tumor.values[0].split(':')[ad_pos].split(',')
+            norm_ref = int(norm_ad[0])
+            norm_alt = int(norm_ad[1])
+            tumor_ref = int(tumor_ad[0])
+            tumor_alt = int(tumor_ad[1])
+        except:
+            norm_ref = 0
+            norm_alt = 0
+            tumor_ref = 0
+            tumor_alt = 0
 
     else:
         norm_ref = 0
