@@ -203,10 +203,10 @@ def count_mutations(input_folder,  output_folder, rerun):
         with open(output_folder + '/do_not_use.txt', 'r') as file_dont:
             do_not_use = []
             for line in file_dont.readlines():
-                do_not_use.append(line[:-1])
+                do_not_use.append(line[:-1].split('/')[-1])
             gz_files = []
             for file in files:
-                if file[-6:] == 'vcf.gz' and file not in do_not_use:
+                if file[-6:] == 'vcf.gz' and file.split('/')[-1] not in do_not_use:
                     gz_files.append(file)
                 else:
                     pass
