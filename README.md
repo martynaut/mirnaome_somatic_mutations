@@ -260,13 +260,11 @@ Poznan, Poland
 
 ## Citation
 
-**Somatic mutations in miRNA genes in lung cancer – potential functional consequences of non-coding sequence variants**
-
+**Somatic Mutations in miRNA Genes in Lung Cancer—Potential Functional Consequences of Non-Coding Sequence Variants**
 
 Paulina Galka-Marciniak<sup>1</sup>, Martyna Olga Urbanek-Trzeciak<sup>1</sup>, Paulina Maria Nawrocka<sup>1</sup>, 
 Agata Dutkiewicz<sup>1</sup>, Maciej Giefing<sup>2</sup>, Marzena Anna Lewandowska<sup>3,4</sup>, 
 and Piotr Kozlowski<sup>1</sup>
-
 
 <sup>1</sup> Institute of Bioorganic Chemistry, Polish Academy of Sciences,  Poznan, Poland
 
@@ -276,9 +274,17 @@ and Piotr Kozlowski<sup>1</sup>
 
 <sup>4</sup> The Ludwik Rydygier Collegium Medicum, Department of Thoracic Surgery and Tumours, Nicolaus Copernicus University, Bydgoszcz, Poland
 
+**Cancers (MDPI) link to publication:**
+
+https://www.mdpi.com/2072-6694/11/6/793
+
 **Biorxiv link to preprint:** 
 
 http://biorxiv.org/cgi/content/short/579011v1
+
+**Citation in MLA format**
+
+Galka-Marciniak, Paulina, et al. "Somatic Mutations in miRNA Genes in Lung Cancer—Potential Functional Consequences of Non-Coding Sequence Variants." Cancers 11.6 (2019): 793.
 
 ## Contact
 
