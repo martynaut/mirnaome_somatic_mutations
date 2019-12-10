@@ -29,11 +29,13 @@ def validation_function(row):
         results_bq = True
     elif int(row['BQ_alt_tum']) > 20:
         results_bq = True
-
-    if np.isnan(row['QSS_alt_tum']):
-        results_qss = True
-    elif int(row['QSS_alt_tum']) / row['tumor_alt_count'] > 20:
-        results_qss = True
+    try:
+        if np.isnan(row['QSS_alt_tum']):
+            results_qss = True
+        elif int(row['QSS_alt_tum']) / row['tumor_alt_count'] > 20:
+            results_qss = True
+    except ZeroDivisionError:
+        results_qss = False
 
     return results_count and results_ssc and results_bq and results_qss
 
