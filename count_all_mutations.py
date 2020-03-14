@@ -14,6 +14,7 @@ url_queue = Queue()
 def process_queue():
     while True:
         input_tuple = url_queue.get()
+        print(input_tuple)
         file_merge_algorithm(input_tuple)
         url_queue.task_done()
 
@@ -72,7 +73,7 @@ def main(input_folder,  output_folder,
         files_temp = [file for sublist in files_temp for file in sublist]
 
         results = pd.DataFrame()
-        for i in range(10):
+        for i in range(20):
             t = threading.Thread(target=process_queue)
             t.daemon = True
             t.start()

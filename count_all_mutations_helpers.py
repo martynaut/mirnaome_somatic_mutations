@@ -92,6 +92,13 @@ def each_file_processing(filename, dict_with_files):
 
     dataframe_records = pd.DataFrame()
 
+    indiv_name = dict_with_files[filename]['indiv_name']
+    indiv_id = dict_with_files[filename]['indiv_id']
+    tumor_name = dict_with_files[filename]['sample_id_tumor_name']
+    tumor_aliq = dict_with_files[filename]['sample_id_tumor_aliQ']
+    normal_name = dict_with_files[filename]['sample_id_normal_name']
+    normal_aliq = dict_with_files[filename]['sample_id_normal_aliQ']
+
     with gzip.open(filename) as f:
         columns = []
         for line in f.readlines():
@@ -100,18 +107,20 @@ def each_file_processing(filename, dict_with_files):
                 pass
             elif line[:1] == '#':
                 columns = line.replace('#', '').strip().lower().split('\t')
+            elif not 'PASS' in line:
+                pass
             else:
                 new_record = pd.DataFrame([line.replace('\n',
                                                         '').replace(';',
                                                                     ':').replace('"',
                                                                                  '').split('\t')],
                                           columns=columns)
-                new_record['indiv_name'] = dict_with_files[filename]['indiv_name']
-                new_record['indiv_id'] = dict_with_files[filename]['indiv_id']
-                new_record['sample_id_tumor_name'] = dict_with_files[filename]['sample_id_tumor_name']
-                new_record['sample_id_tumor_aliQ'] = dict_with_files[filename]['sample_id_tumor_aliQ']
-                new_record['sample_id_normal_name'] = dict_with_files[filename]['sample_id_normal_name']
-                new_record['sample_id_normal_aliQ'] = dict_with_files[filename]['sample_id_normal_aliQ']
+                new_record['indiv_name'] = indiv_name
+                new_record['indiv_id'] = indiv_id
+                new_record['sample_id_tumor_name'] = tumor_name
+                new_record['sample_id_tumor_aliQ'] = tumor_aliq
+                new_record['sample_id_normal_name'] = normal_name
+                new_record['sample_id_normal_aliQ'] = normal_aliq
                 (new_record['norm_ref_count'], new_record['norm_alt_count'],
                     new_record['tumor_ref_count'], new_record['tumor_alt_count'],
                     new_record['BQ_ref_tum'],
@@ -153,10 +162,12 @@ def handle_patient(input_tuple):
             dataframe = each_file_processing(file,
                                              dict_with_files
                                              )
+            dataframe = dataframe[dataframe['filter'].str.contains('PASS')]
             dataframe['algorithm'] = temp_df.loc[file, 'type_of_file']
+
             results_df = pd.concat([results_df, dataframe])
             count = count + 1
-        results_df = results_df[results_df['filter'].str.contains('PASS')]
+
         results_df.to_csv(output_folder + '/patients/results_count_all_{}.csv'.format(patient),
                           sep=',',
                           index=False)
@@ -220,6 +231,9 @@ def count_mutations(input_folder,  output_folder, rerun):
 
         df_dict_with_files.index.name = 'filename'
         df_dict_with_files.to_csv(output_folder + '/files_summary_count_mutations.csv', sep=',')
+
+    df_dict_with_files = df_dict_with_files[df_dict_with_files['indiv_name'] != '']
+    df_dict_with_files = df_dict_with_files[~df_dict_with_files['indiv_name'].isnull()]
 
     for i in range(10):
         t = threading.Thread(target=process_queue)
